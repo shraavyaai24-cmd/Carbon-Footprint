@@ -1,4 +1,3 @@
-```python id="groq4"
 import streamlit as st
 from groq import Groq
 from dotenv import load_dotenv
@@ -275,4 +274,4 @@ if st.button("Calculate Carbon Footprint"):
     st.success(
         "This project supports SDG 13: Climate Action 🌍"
     )
-```
+
