@@ -1,5 +1,6 @@
+```python id="groq4"
 import streamlit as st
-import google.generativeai as genai
+from groq import Groq
 from dotenv import load_dotenv
 import os
 
@@ -9,11 +10,11 @@ import os
 load_dotenv()
 
 # -----------------------------
-# Configure Gemini API
+# Configure Groq
 # -----------------------------
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-
-model = genai.GenerativeModel("gemini-1.5-flash")
+client = Groq(
+    api_key=os.getenv("GROQ_API_KEY")
+)
 
 # -----------------------------
 # Page Config
@@ -34,16 +35,18 @@ st.markdown("### SDG 13: Climate Action")
 # -----------------------------
 # Sidebar
 # -----------------------------
-st.sidebar.title("🌱 About")
+st.sidebar.title("🌱 About TerraAI")
+
 st.sidebar.info(
     """
-    TerraAI helps users estimate their carbon footprint
-    and provides eco-friendly suggestions based on lifestyle habits.
+    TerraAI helps individuals estimate their
+    carbon footprint and receive personalized
+    sustainability suggestions.
     """
 )
 
 # -----------------------------
-# User Inputs
+# Transportation Section
 # -----------------------------
 st.header("🚗 Transportation")
 
@@ -67,7 +70,7 @@ distance = st.slider(
 )
 
 flights = st.slider(
-    "Number of flights taken yearly",
+    "Flights taken yearly",
     0,
     20,
     0
@@ -86,7 +89,7 @@ electricity_bill = st.slider(
 )
 
 acs = st.slider(
-    "Number of ACs used at home",
+    "Number of ACs used",
     0,
     5,
     1
@@ -108,7 +111,7 @@ diet = st.radio(
 )
 
 meat_days = st.slider(
-    "How many days per week do you eat meat?",
+    "Meat consumption per week",
     0,
     7,
     2
@@ -120,7 +123,7 @@ food_waste = st.radio(
 )
 
 # -----------------------------
-# Lifestyle & Waste
+# Lifestyle Section
 # -----------------------------
 st.header("♻️ Lifestyle")
 
@@ -139,7 +142,7 @@ plastic_usage = st.selectbox(
 )
 
 fast_fashion = st.selectbox(
-    "How often do you buy fast fashion?",
+    "Fast fashion purchases",
     [
         "Rarely",
         "Sometimes",
@@ -154,9 +157,7 @@ if st.button("Calculate Carbon Footprint"):
 
     score = 0
 
-    # -----------------------------
-    # Transportation Score
-    # -----------------------------
+    # Transportation
     if transport == "Car":
         score += 30
     elif transport == "Bike":
@@ -173,18 +174,14 @@ if st.button("Calculate Carbon Footprint"):
     score += distance * 0.5
     score += flights * 10
 
-    # -----------------------------
-    # Electricity Score
-    # -----------------------------
+    # Electricity
     score += electricity_bill / 200
     score += acs * 10
 
     if led_usage == "No":
         score += 10
 
-    # -----------------------------
-    # Food Score
-    # -----------------------------
+    # Food
     if diet == "Non-Vegetarian":
         score += 15
 
@@ -193,9 +190,7 @@ if st.button("Calculate Carbon Footprint"):
     if food_waste == "Yes":
         score += 10
 
-    # -----------------------------
-    # Lifestyle Score
-    # -----------------------------
+    # Lifestyle
     if recycle == "No":
         score += 10
 
@@ -212,34 +207,31 @@ if st.button("Calculate Carbon Footprint"):
     # -----------------------------
     # Result Category
     # -----------------------------
-    st.header("📊 Your Result")
+    st.header("📊 Carbon Footprint Result")
 
     if score < 50:
         category = "Low Carbon Footprint 🌱"
-        color = "green"
 
     elif score < 100:
         category = "Moderate Carbon Footprint ⚠️"
-        color = "orange"
 
     else:
         category = "High Carbon Footprint 🔥"
-        color = "red"
 
     st.markdown(f"## Score: {round(score, 2)}")
     st.markdown(f"### {category}")
 
     # -----------------------------
-    # AI Suggestions
+    # AI Suggestions Using Groq
     # -----------------------------
     prompt = f"""
     The user has a carbon footprint score of {score}.
 
     User details:
     - Transport: {transport}
-    - Daily distance: {distance} km
+    - Distance: {distance} km daily
     - Flights yearly: {flights}
-    - Electricity bill: {electricity_bill}
+    - Electricity bill: ₹{electricity_bill}
     - ACs used: {acs}
     - LED usage: {led_usage}
     - Diet: {diet}
@@ -250,22 +242,37 @@ if st.button("Calculate Carbon Footprint"):
     - Fast fashion: {fast_fashion}
 
     Give:
-    1. A short analysis of their lifestyle
-    2. 5 personalized eco-friendly suggestions
-    3. Motivational advice for sustainable living
+    1. Short lifestyle analysis
+    2. 5 personalized eco-friendly tips
+    3. Motivation for sustainable living
 
-    Keep the response simple and friendly.
+    Keep response friendly and concise.
     """
 
-    response = model.generate_content(prompt)
+    completion = client.chat.completions.create(
+        model="llama3-8b-8192",
+        messages=[
+            {
+                "role": "system",
+                "content": "You are TerraAI, a sustainability assistant."
+            },
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ]
+    )
+
+    ai_response = completion.choices[0].message.content
 
     st.header("🤖 TerraAI Suggestions")
 
-    st.write(response.text)
+    st.write(ai_response)
 
     # -----------------------------
-    # SDG Section
+    # SDG Message
     # -----------------------------
     st.success(
         "This project supports SDG 13: Climate Action 🌍"
     )
+```
