@@ -1,6 +1,6 @@
-# 🌍 EcoBot — AI Assistant for SDG 13
+# 🌍 TerraAI — AI Assistant for SDG 13
 
-EcoBot is a simple AI-powered chatbot that promotes environmental awareness and sustainable living.
+TerraAI is a simple AI-powered chatbot that promotes environmental awareness and sustainable living.
 The chatbot helps users learn how to reduce their carbon footprint and supports **SDG 13: Climate Action**.
 
 ---
@@ -19,7 +19,7 @@ The chatbot helps users learn how to reduce their carbon footprint and supports 
 
 * Python
 * Streamlit
-* Google Gemini API
+* Groq API
 * python-dotenv
 
 ---
@@ -42,7 +42,7 @@ The chatbot spreads awareness about:
 ## 📂 Project Structure
 
 ```bash
-EcoBot/
+TerraAI/
 │
 ├── app.py
 ├── requirements.txt
@@ -59,7 +59,7 @@ EcoBot/
 
 ```bash
 git clone <your_repository_link>
-cd EcoBot
+cd TerraAI
 ```
 
 ### 2. Install dependencies
@@ -73,7 +73,7 @@ pip install -r requirements.txt
 Create a `.env` file and add:
 
 ```env
-GEMINI_API_KEY=your_api_key_here
+GROQ_API_KEY=your_api_key_here
 ```
 
 ---
